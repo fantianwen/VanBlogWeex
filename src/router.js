@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 
 import Hello from './components/Hello.vue'
 import Blogs from './components/Blogs.vue'
+import Blog from './components/Blog.vue'
 
 
 Vue.use(VueRouter)
@@ -22,6 +23,10 @@ const routes = [
         path: '/',
         component: Blogs
     },
+    {
+        path: '/blog/:id',
+        component: Blog
+    }
 ];
 
 export default new VueRouter({

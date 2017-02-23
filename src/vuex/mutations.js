@@ -15,8 +15,10 @@ const mutations = {
     },
     setBlogLastPage(state, blogLastPage){
         state.blogs.isLastPage = blogLastPage;
+    },
+    setBlogDetail(state, blogDetail){
+        state.blog = blogDetail;
     }
-
 };
 
 export {mutations};

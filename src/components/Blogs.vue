@@ -6,7 +6,7 @@
         </refresh>
 
         <cell class="blog-cell" v-for="blog in blogs">
-            <div>
+            <div @click="jumpToBlogDetail(blog)">
                 <div class="type-wrapper">
                     <img class="category_image"
                          v-bind:src="blogCategoryImage(blog)"
@@ -50,6 +50,7 @@
         components:{
         },
         methods:{
+            // todo vuex式重构
             loadDate(){
                 Requests.getBlogs(this.pageNo)
                     .then((response)=> {
@@ -90,13 +91,16 @@
                 this.shouldRefresh = true;
                 this.pageNo = 0;
                 this.loadDate();
+            },
+            jumpToBlogDetail(blog){
+                console.log("jump to detail"+blog);
+                this.$router.push('/blog/'+blog.id);
             }
         },
         created(){
            this.loadDate();
         },
     }
-
 
 </script>
 
@@ -159,6 +163,7 @@
     font-size:16px;
     color:orange;
 }
+
 
 
 </style>

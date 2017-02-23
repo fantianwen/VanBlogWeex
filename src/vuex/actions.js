@@ -13,7 +13,19 @@ const actions = {
                 commit('setBlogLastPage', response.last);
                 commit('setBlogsData', response.content);
             })
-            .catch('error');
+            .catch(()=> {
+                console.log('error when getBlogs');
+            });
+    },
+    getBlogDetailById({commit,dispatch}, blogId){
+        Requests.getBlogDetailById(blogId)
+            .then((response)=> {
+                console.log(response);
+                commit('setBlogDetail',response.responseData);
+            })
+            .catch(()=> {
+                console.log('error when getBlogDetailById');
+            });
     }
 };
 

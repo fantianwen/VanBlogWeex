@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @androidback="back">
         <router-view style="flex:1"></router-view>
     </div>
 </template>
@@ -18,6 +18,9 @@
       update: function (e) {
         this.target = 'Weex'
         console.log('target:', this.target)
+      },
+      back(){
+        this.$router.back();
       }
     }
   }

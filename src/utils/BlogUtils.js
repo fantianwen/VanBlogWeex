@@ -23,7 +23,7 @@ const BlogUtils = {
                 categoryImageUrl = 'http://o7zh7nhn0.bkt.clouddn.com/gradle-logo.png';
                 break;
             case 'React-Native':
-                categoryImageUrl = 'http://o7zh7nhn0.bkt.clouddn.com/reactlogo.png';
+                categoryImageUrl = '/assets/images/react-logo.jpeg';
                 break;
             default:
                 categoryImageUrl = "";

@@ -8,6 +8,9 @@ const getters = {
     },
     getCurrentBlogPageNo(state){
         return state.blogs.currentPageNo;
+    },
+    getBlogDetail(state){
+        return state.blog;
     }
 };
 

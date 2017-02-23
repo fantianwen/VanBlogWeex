@@ -6,7 +6,8 @@ const states = {
         currentPageNo: 0,
         blogsData: '',
         isLastPage: false,
-    }
+    },
+    blog:''
 };
 
 export {states};

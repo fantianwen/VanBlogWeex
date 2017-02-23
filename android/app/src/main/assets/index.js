@@ -56,7 +56,7 @@
 
 	var _router2 = _interopRequireDefault(_router);
 
-	var _store = __webpack_require__(20);
+	var _store = __webpack_require__(24);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -141,6 +141,9 @@
 	    update: function update(e) {
 	      this.target = 'Weex';
 	      console.log('target:', this.target);
+	    },
+	    back: function back() {
+	      this.$router.back();
 	    }
 	  }
 	};
@@ -150,7 +153,11 @@
 /***/ function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-	  return _h('div', [_h('router-view', {
+	  return _h('div', {
+	    on: {
+	      "androidback": _vm.back
+	    }
+	  }, [_h('router-view', {
 	    staticStyle: {
 	      flex: "1"
 	    }
@@ -180,13 +187,17 @@
 
 	var _Blogs2 = _interopRequireDefault(_Blogs);
 
+	var _Blog = __webpack_require__(20);
+
+	var _Blog2 = _interopRequireDefault(_Blog);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// The Vue build version to load with the `import` command
+	// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 	Vue.use(_vueRouter2.default);
 
 	// Story view factory
-	// The Vue build version to load with the `import` command
-	// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 	function createView() {
 	    return {
 	        render: function render(createElement) {
@@ -198,6 +209,9 @@
 	var routes = [{
 	    path: '/',
 	    component: _Blogs2.default
+	}, {
+	    path: '/blog/:id',
+	    component: _Blog2.default
 	}];
 
 	exports.default = new _vueRouter2.default({
@@ -2739,18 +2753,24 @@
 	//
 	//
 	//
-	//
-	//
-	//
 
 	exports.default = {
 	    data: function data() {
 	        return {
-	            msg: 'hello vue'
+	            blogImageUrl: ''
 	        };
 	    },
+	    created: function created() {
+	        this.loadBlogData();
+	    },
 
-	    components: {}
+	    components: {},
+	    methods: {
+	        loadBlogData: function loadBlogData() {
+	            console('路由携带信息:' + this.$router.params.id);
+	        }
+	    }
+
 	};
 
 /***/ },
@@ -2758,10 +2778,25 @@
 /***/ function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-	  return _h('div', {
-	    staticClass: ["hello"]
-	  }, [_h('text', [_vm._s(_vm.msg)])])
-	},staticRenderFns: []}
+	  return _vm._m(0)
+	},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _h('div', [_h('img', {
+	    staticStyle: {
+	      width: "750",
+	      height: "750"
+	    },
+	    attrs: {
+	      "src": "blogImageUrl"
+	    }
+	  }), _h('div', {
+	    staticClass: ["title"]
+	  }, [_h('text', {
+	    staticStyle: {
+	      fontSize: "50",
+	      color: "#ff0000"
+	    }
+	  }, ["你好，image"])])])
+	}]}
 	module.exports.render._withStripped = true
 
 /***/ },
@@ -2926,6 +2961,7 @@
 
 	    components: {},
 	    methods: {
+	        // todo vuex式重构
 	        loadDate: function loadDate() {
 	            var _this = this;
 
@@ -2966,6 +3002,10 @@
 	            this.shouldRefresh = true;
 	            this.pageNo = 0;
 	            this.loadDate();
+	        },
+	        jumpToBlogDetail: function jumpToBlogDetail(blog) {
+	            console.log("jump to detail" + blog);
+	            this.$router.push('/blog/' + blog.id);
 	        }
 	    },
 	    created: function created() {
@@ -3032,7 +3072,7 @@
 	                categoryImageUrl = 'http://o7zh7nhn0.bkt.clouddn.com/gradle-logo.png';
 	                break;
 	            case 'React-Native':
-	                categoryImageUrl = 'http://o7zh7nhn0.bkt.clouddn.com/reactlogo.png';
+	                categoryImageUrl = '/assets/images/react-logo.jpeg';
 	                break;
 	            default:
 	                categoryImageUrl = "";
@@ -3048,6 +3088,9 @@
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * Created by RadAsm on 17/2/16.
+	 */
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3057,10 +3100,7 @@
 
 	var _fetch = __webpack_require__(18);
 
-	var getBlogDetailById = "/blogs/getBlogDetailById"; /**
-	                                                     * Created by RadAsm on 17/2/16.
-	                                                     */
-
+	var _getBlogDetailById = "/blogs/getBlogDetailById";
 	var saveBlog = "/blogs/insertOne";
 	var getBlogsByPage = "/blogs/getBlogsByPage";
 	var getCategories = "/category/getAllCategories";
@@ -3068,6 +3108,9 @@
 	var Requests = {
 	    getBlogs: function getBlogs(pageNo) {
 	        return (0, _fetch.fetch)(getBlogsByPage + "?pageNo=" + pageNo + "&pageSize=8");
+	    },
+	    getBlogDetailById: function getBlogDetailById(blogId) {
+	        return (0, _fetch.fetch)(_getBlogDetailById + "?id=" + blogId);
 	    }
 	};
 
@@ -3129,7 +3172,13 @@
 	  }, ["Refreshing ..."])]), _vm._l((_vm.blogs), function(blog) {
 	    return _h('cell', {
 	      staticClass: ["blog-cell"]
-	    }, [_h('div', [_h('div', {
+	    }, [_h('div', {
+	      on: {
+	        "click": function($event) {
+	          _vm.jumpToBlogDetail(blog)
+	        }
+	      }
+	    }, [_h('div', {
 	      staticClass: ["type-wrapper"]
 	    }, [_h('img', {
 	      staticClass: ["category_image"],
@@ -3170,23 +3219,293 @@
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(21)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(22)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(23)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/RadAsm/github/openSourceProjects/forMe/van_blog_weex/src/components/Blog.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	for (var name in module) {
+	__vue_options__.style[name] = module[name]
+	}
+	})
+
+	module.exports = __vue_exports__
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  "blogDetail-wrapper": {
+	    "display": "flex"
+	  },
+	  "top": {
+	    "backgroundColor": "#FFA500",
+	    "flexDirection": "row",
+	    "justifyContent": "space-between"
+	  },
+	  "blogImage": {
+	    "height": 350
+	  },
+	  "blog-summary": {
+	    "height": 64,
+	    "display": "flex",
+	    "padding": 8,
+	    "flexDirection": "row",
+	    "justifyContent": "flex-start",
+	    "alignItems": "center"
+	  },
+	  "blogCategoryLogo": {
+	    "width": 48,
+	    "height": 48,
+	    "marginLeft": 16
+	  },
+	  "blogSummaryWrapper": {
+	    "display": "flex",
+	    "height": 48,
+	    "flexDirection": "column",
+	    "marginLeft": 16
+	  },
+	  "blogCategory": {
+	    "height": 20
+	  },
+	  "blogCreatedTime": {
+	    "height": 20
+	  },
+	  "blogCategoryLogoImage": {
+	    "width": 48,
+	    "height": 48
+	  },
+	  "normalText": {
+	    "flex": 1,
+	    "fontSize": 16
+	  },
+	  "webview": {
+	    "height": 2000
+	  }
+	}
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
-	var _vuex = __webpack_require__(21);
+	var _BlogUtils = __webpack_require__(16);
+
+	var _TimeUtils = __webpack_require__(15);
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    data: function data() {
+	        return {};
+	    },
+
+	    components: {},
+	    created: function created() {
+	        this.loadBlogData();
+	    },
+
+	    methods: {
+	        loadBlogData: function loadBlogData() {
+	            var blogId = this.$route.params.id;
+	            this.$store.dispatch('getBlogDetailById', blogId);
+	        }
+	    },
+	    computed: {
+	        blogImageUrl: function blogImageUrl() {
+	            return this.$store.getters.getBlogDetail.image_url;
+	        },
+	        blogCategoryLogoUrl: function blogCategoryLogoUrl() {
+	            return _BlogUtils.BlogUtils.parseBlogCategory(this.$store.getters.getBlogDetail);
+	        },
+	        blogCategory: function blogCategory() {
+	            var blog = this.$store.getters.getBlogDetail;
+	            return blog.category;
+	        },
+	        blogCreatedTime: function blogCreatedTime() {
+	            var blog = this.$store.getters.getBlogDetail;
+	            return _TimeUtils.TimeUtils.formatTimeYMDHM(blog.created_time);
+	        },
+	        blogDetailUrl: function blogDetailUrl() {
+	            return 'http://olel07toq.bkt.clouddn.com/index.html#/blogs/weex/' + this.$route.params.id;
+	        }
+	    }
+	};
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _h('scroller', {
+	    attrs: {
+	      "show-scrollbar": false
+	    }
+	  }, [_h('div', {
+	    staticClass: ["blogDetail-wrapper"]
+	  }, [_h('img', {
+	    staticClass: ["blogImage"],
+	    attrs: {
+	      "src": _vm.blogImageUrl,
+	      "resize": "cover"
+	    }
+	  }), _h('div', {
+	    staticClass: ["blog-summary"]
+	  }, [_h('div', {
+	    staticClass: ["blogCategoryLogo"]
+	  }, [_h('img', {
+	    staticClass: ["blogCategoryLogoImage"],
+	    attrs: {
+	      "src": _vm.blogCategoryLogoUrl,
+	      "resize": "contain"
+	    }
+	  })]), _h('div', {
+	    staticClass: ["blogSummaryWrapper"]
+	  }, [_h('text', {
+	    staticClass: ["normalText"],
+	    attrs: {
+	      "value": _vm.blogCategory
+	    }
+	  }), _h('text', {
+	    staticClass: ["normalText"],
+	    attrs: {
+	      "value": _vm.blogCreatedTime
+	    }
+	  })])]), _h('web', {
+	    ref: "webview",
+	    staticClass: ["webview"],
+	    attrs: {
+	      "src": _vm.blogDetailUrl
+	    }
+	  })])])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _vuex = __webpack_require__(25);
 
 	var _vuex2 = _interopRequireDefault(_vuex);
 
-	var _states = __webpack_require__(22);
+	var _states = __webpack_require__(26);
 
-	var _getters = __webpack_require__(23);
+	var _getters = __webpack_require__(27);
 
-	var _mutations = __webpack_require__(24);
+	var _mutations = __webpack_require__(28);
 
-	var _actions = __webpack_require__(25);
+	var _actions = __webpack_require__(29);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3201,7 +3520,7 @@
 	});
 
 /***/ },
-/* 21 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -4012,7 +4331,7 @@
 
 
 /***/ },
-/* 22 */
+/* 26 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4028,13 +4347,14 @@
 	        currentPageNo: 0,
 	        blogsData: '',
 	        isLastPage: false
-	    }
+	    },
+	    blog: ''
 	};
 
 	exports.states = states;
 
 /***/ },
-/* 23 */
+/* 27 */
 /***/ function(module, exports) {
 
 	/**
@@ -4051,13 +4371,16 @@
 	    },
 	    getCurrentBlogPageNo: function getCurrentBlogPageNo(state) {
 	        return state.blogs.currentPageNo;
+	    },
+	    getBlogDetail: function getBlogDetail(state) {
+	        return state.blog;
 	    }
 	};
 
 	exports.getters = getters;
 
 /***/ },
-/* 24 */
+/* 28 */
 /***/ function(module, exports) {
 
 	/**
@@ -4081,13 +4404,16 @@
 	    },
 	    setBlogLastPage: function setBlogLastPage(state, blogLastPage) {
 	        state.blogs.isLastPage = blogLastPage;
+	    },
+	    setBlogDetail: function setBlogDetail(state, blogDetail) {
+	        state.blog = blogDetail;
 	    }
 	};
 
 	exports.mutations = mutations;
 
 /***/ },
-/* 25 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -4112,7 +4438,20 @@
 	            commit('setCurrentBlogPageNo', response.number);
 	            commit('setBlogLastPage', response.last);
 	            commit('setBlogsData', response.content);
-	        }).catch('error');
+	        }).catch(function () {
+	            console.log('error when getBlogs');
+	        });
+	    },
+	    getBlogDetailById: function getBlogDetailById(_ref2, blogId) {
+	        var commit = _ref2.commit,
+	            dispatch = _ref2.dispatch;
+
+	        _Blogs.Requests.getBlogDetailById(blogId).then(function (response) {
+	            console.log(response);
+	            commit('setBlogDetail', response.responseData);
+	        }).catch(function () {
+	            console.log('error when getBlogDetailById');
+	        });
 	    }
 	};
 
